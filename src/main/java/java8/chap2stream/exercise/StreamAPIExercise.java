@@ -12,6 +12,7 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Collectors;
 import java.util.stream.DoubleStream;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
@@ -20,6 +21,31 @@ import java.util.stream.Stream;
  * Created by shiznet3908@gmail.com on 15/6/1.
  */
 public class StreamAPIExercise {
+
+    /**
+     * 2.13
+     * Repeat the preceding exercise, but filter out the short strings
+     * and use the collect method with
+     * Collectors.groupingBy and Collectors.counting.
+     * *
+     */
+    @Test
+    public void filterOutShortStr() throws IOException {
+        //1.each length word counts and then add them up
+        //2.
+        String filepath = "/Users/newcomer/Desktop/test.txt";
+        Stream<String> lines = Files.lines(Paths.get(filepath), StandardCharsets.ISO_8859_1);
+        System.out.println(System.currentTimeMillis());
+        Map<Integer, Long> groups = lines
+                .collect(Collectors.groupingBy(str -> {
+                    if (str.length() > 5)
+                        return 5;
+                    else
+                        return 0;
+                }, Collectors.counting()));
+
+        System.out.println(groups.get(5));
+    }
 
     /**
      * 2.12
@@ -33,17 +59,13 @@ public class StreamAPIExercise {
         Stream<String> lines = Files.lines(Paths.get(filepath), StandardCharsets.ISO_8859_1);
         System.out.println(System.currentTimeMillis());
         AtomicInteger lineCount = lines.reduce(new AtomicInteger(0), (counter, line) -> {
-            if (line.length() > 5) {
-                counter.getAndIncrement();
-            }
-            return counter;
-        }, (counterA, counterB) -> {
-            //The largest counter would be the result.
-            if(counterA.get()<counterB.get()){
-                return counterB;
-            }
-            return counterA;
-        });
+                    if (line.length() > 5) {
+                        counter.getAndIncrement();
+                    }
+                    return counter;
+                },
+                //The largest counter would be the result.
+                (counterA, counterB) -> counterA.get() < counterB.get() ? counterB : counterA);
         System.out.println(lineCount.get());
         System.out.println("debug");
     }
