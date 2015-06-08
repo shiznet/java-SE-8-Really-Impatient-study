@@ -38,7 +38,6 @@ public class StreamAPIExercise {
             }
             return counter;
         }, (counterA, counterB) -> {
-            //Thread safe.
             //The largest counter would be the result.
             if(counterA.get()<counterB.get()){
                 return counterB;

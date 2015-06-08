@@ -47,7 +47,6 @@ public class ReduceTest {
                     return counter;
                 },
                 (counterA, counterB) -> {
-                    //Shared between different threads.
                     System.out.println(
                             Thread.currentThread().getName() +
                                     "-counterA:" + counterA + " counterB:" + counterB);
