@@ -19,6 +19,66 @@ import java.util.stream.Stream;
  * Created by shiznet3908@gmail.com on 15/6/1.
  */
 public class StreamAPIExercise {
+
+    /**
+     * 2.9
+     * Join all elements in a Stream<ArrayList<T>> to one ArrayList<T>.
+     * Show how to do this with the three forms of reduce.
+     * *
+     */
+    @Test
+    public void joinStreamListToList() {
+
+    }
+
+    protected <T> ArrayList<T> joinFormA(Stream<ArrayList<T>> stream) {
+        ArrayList<String> targetList = new ArrayList<String>(
+                Arrays.asList("abc", "bcd", "asd"));
+        ArrayList<String> sourceList = new ArrayList<String>(
+                Arrays.asList("abc1", "bcd1", "asd1"));
+        //Form one:
+        //reduce(BinaryOperator) : reduce((x,y)->func(x,y))
+        // func(x,y) return the same type of x and y.And the
+        //last result of func would be the input argue of this call.
+
+        return stream.reduce((l1, l2) -> {
+            l1.addAll(l2);
+            return l1;
+        }).orElse(new ArrayList<T>());
+    }
+
+    protected <T> ArrayList<T> joinFormB(Stream<ArrayList<T>> stream) {
+        //Form two
+        //reduce(FirstVal,BinaryOperator) : reduce(default,(x,y)->func(x,y))
+        // func(x,y) return the same type of x and y.And the
+        //last result of func would be the input argue of this call.
+        //First round default and the first element will pass to func.
+        return stream.reduce(new ArrayList<T>(), (l1, l2) -> {
+            l1.addAll(l2);
+            return l1;
+        });
+    }
+
+    protected <T> ArrayList<T> joinFormC(Stream<ArrayList<T>> stream) {
+        //Form two
+        //reduce(FirstVal,BinaryOperator) : reduce(default,(x,y)->func(x,y))
+        // func(x,y) return the same type of x and y.And the
+        //last result of func would be the input argue of this call.
+        //First round default and the first element will pass to func.
+        //There are two funcion.The first would handle different type of data.
+        //The second one would process the reducing in parallel.
+        return stream.reduce(new ArrayList<T>(),
+                (a, b) -> {
+                    a.addAll(b);
+                    return a;
+                },
+                (l1, l2) -> {
+                    l1.addAll(l2);
+                    return l1;
+                });
+    }
+
+
     /**
      * 2.8
      * Write a method
@@ -42,9 +102,9 @@ public class StreamAPIExercise {
      */
     @Test
     public void checkFinite() {
-        Stream stream = Stream.iterate(BigInteger.ZERO,n->n.add(BigInteger.ONE));
+        Stream stream = Stream.iterate(BigInteger.ZERO, n -> n.add(BigInteger.ONE));
         boolean isFinit = checkFinite.isFinit(stream);
-        Stream stream2 = Stream.of(1,2,3,4,5);
+        Stream stream2 = Stream.of(1, 2, 3, 4, 5);
         isFinit = checkFinite.isFinit(stream2);
         System.out.println("debug");
     }
@@ -231,22 +291,23 @@ class wordcounter implements Runnable {
 
 class checkFinite {
 
-    public static ThreadLocal<Integer> counter = new ThreadLocal<Integer>(){
+    public static ThreadLocal<Integer> counter = new ThreadLocal<Integer>() {
         @Override
         protected Integer initialValue() {
             return 0;
         }
     };
+
     public static <T> boolean isFinit(Stream<T> stream) {
         long count = stream.count();
         Integer c = counter.get();
         stream.peek(checkFinite::isFinita).limit(2L);
         c = counter.get();
 
-        return c>0;
+        return c > 0;
     }
 
-    public static <T> void isFinita(T t){
+    public static <T> void isFinita(T t) {
         Integer c = counter.get();
         c++;
         counter.set(c);
@@ -254,6 +315,7 @@ class checkFinite {
 }
 
 class zipper {
+    //Ugly way to alternatively iterate two Stream.
     public static <T> Stream<T> zip(Stream<T> first, Stream<T> second) {
         Iterator<T> iteratorfirst = first.iterator();
         Iterator<T> iteratorsecond = second.iterator();
@@ -283,7 +345,7 @@ class zipper {
         return collection.stream();
     }
 
-    public static <T> Stream<T> zipWithStream(Stream<T> first,Stream<T> second){
+    public static <T> Stream<T> zipWithStream(Stream<T> first, Stream<T> second) {
         return null;
     }
 }
