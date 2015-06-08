@@ -22,6 +22,47 @@ import java.util.stream.Stream;
 public class StreamAPIExercise {
 
     /**
+     * 2.12
+     * Count all short words in a parallel Stream<String>, as described in Section 2.13,
+     * “Parallel Streams,” on page 40, by updating an array of AtomicInteger.
+     * Use the atomic getAndIncrement method to safely increment each counter.
+     */
+    @Test
+    public void parallellyIncreAtomic() throws IOException {
+        String filepath = "/Users/newcomer/Desktop/test.txt";
+        Stream<String> lines = Files.lines(Paths.get(filepath), StandardCharsets.ISO_8859_1);
+        System.out.println(System.currentTimeMillis());
+        AtomicInteger lineCount = lines.reduce(new AtomicInteger(0), (counter, line) -> {
+            if (line.length() > 5) {
+                counter.getAndIncrement();
+            }
+            return counter;
+        }, (counterA, counterB) -> {
+            //Thread safe.
+            //The largest counter would be the result.
+            if(counterA.get()<counterB.get()){
+                return counterB;
+            }
+            return counterA;
+        });
+        System.out.println(lineCount.get());
+        System.out.println("debug");
+    }
+
+    /**
+     * 2.11
+     * It should be possible to concurrently collect stream results in a single ArrayList,
+     * instead of merging multiple array lists, provided it has been constructed with
+     * the stream’s size, since concurrent set operations at disjoint positions are threadsafe.
+     * How can you achieve that?
+     * *
+     */
+    @Test
+    public void dontgetit() {
+
+    }
+
+    /**
      * 2.10
      * Write a call to reduce that can be used to compute the average of a Stream<Double>.
      * Why can’t you simply compute the sum and divide by count()?
