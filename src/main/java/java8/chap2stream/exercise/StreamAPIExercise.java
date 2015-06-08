@@ -12,6 +12,7 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.DoubleStream;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
@@ -21,6 +22,30 @@ import java.util.stream.Stream;
 public class StreamAPIExercise {
 
     /**
+     * 2.10
+     * Write a call to reduce that can be used to compute the average of a Stream<Double>.
+     * Why can’t you simply compute the sum and divide by count()?
+     */
+    @Test
+    public void averageByReduce() {
+        double[] array = {123.2, 123.12, 12.0, 123.34, 21312.123};
+        Stream<Double> stream = DoubleStream.of(array).boxed();
+        //Calculating average without getting the sum pre
+        //f() = (lastavg*(counter-1)+n)/counter;counter++;
+        final AtomicInteger counter = new AtomicInteger(1);
+        Double result = stream.reduce(0.0, (avg, element) -> {
+            avg = (avg * (counter.get() - 1) + element) / counter.get();
+            counter.incrementAndGet();
+            return avg;
+        });
+        System.out.println("abc");
+        DoubleStream doubleStream = DoubleStream.of(array);
+        double result_d = doubleStream.average().getAsDouble();
+        System.out.println("debug");
+
+    }
+
+    /**
      * 2.9
      * Join all elements in a Stream<ArrayList<T>> to one ArrayList<T>.
      * Show how to do this with the three forms of reduce.
@@ -28,7 +53,16 @@ public class StreamAPIExercise {
      */
     @Test
     public void joinStreamListToList() {
-
+        ArrayList<String> lista = new ArrayList<String>(Arrays.asList("abc1", "bcd1"));
+        ArrayList<String> listb = new ArrayList<String>(Arrays.asList("abc2", "bcd2"));
+        ArrayList<String> listc = new ArrayList<String>(Arrays.asList("abc3", "bcd3"));
+        ArrayList<String> listd = new ArrayList<String>(Arrays.asList("abc4", "bcd4"));
+        Stream<ArrayList<String>> stream = Stream.of(lista, listb, listc, listd);
+        ArrayList<String> result = null;
+        result = joinFormA(stream);
+//        result = joinFormB(stream);
+//        result = joinFormB(stream);
+        System.out.println("Debug");
     }
 
     protected <T> ArrayList<T> joinFormA(Stream<ArrayList<T>> stream) {
