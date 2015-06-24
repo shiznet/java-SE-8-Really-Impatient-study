@@ -2,7 +2,10 @@ package java8.chap3programwithlambda.exercise;
 
 import org.testng.annotations.Test;
 
+import javax.swing.*;
+import java.util.concurrent.locks.ReentrantLock;
 import java.util.function.BiConsumer;
+import java.util.function.Function;
 import java.util.function.Predicate;
 
 /**
@@ -23,12 +26,12 @@ public class ProgramWithLambda {
         //logIf(Predicate<Integer> predict,BiConsumer<String,Object[]> biconsumer);
     }
 
-    protected void logIf(int level,String msg,Object[] params, Predicate<Integer> predicate,
+    protected void logIf(int level, String msg, Object[] params, Predicate<Integer> predicate,
         BiConsumer<String, Object[]> biConsumer) {
         if (!predicate.test(level)) {
             return;
         }
-        biConsumer.accept(msg,params);
+        biConsumer.accept(msg, params);
     }
 }
 
@@ -54,6 +57,25 @@ class Logger {
             return;
         }
         biConsumer.accept(msg, vars);
+    }
+
+    /**
+     * 2.
+     */
+    public void withLock(Runnable task) {
+        ReentrantLock lock = new ReentrantLock();
+        withLock(lock, () -> {
+            System.out.println("task run");
+        });
+    }
+
+    protected void withLock(ReentrantLock lock, Runnable task) {
+        lock.lock();
+        try {
+            task.run();
+        } finally {
+            lock.unlock();
+        }
     }
 
 }
