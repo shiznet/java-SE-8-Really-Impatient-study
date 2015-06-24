@@ -16,33 +16,44 @@ public class ProgramWithLambda {
      * A typical call would be
      * logIf(Level.FINEST, () -> i == 10, () -> "a[10] = " + a[10]).
      * Don’t evaluate the condition if the logger won’t log the message.
-     * */
-    @Test
-    public void deferedExecutionTest(){
+     */
+    @Test public void deferedExecutionTest() {
         //logIf(Level.FINEST, () -> i == 10, () -> "a[10] = " + a[10]).
         //logIf((Level)->Level>effectiveLevelInt,(msg,arg)->concatenate msg)
         //logIf(Predicate<Integer> predict,BiConsumer<String,Object[]> biconsumer);
     }
 
-    protected void logIf(int level,Predicate<Integer> predicate,BiConsumer<String,Object[]> biConsumer){
-        if(predicate.test(level)){
-
+    protected void logIf(int level,String msg,Object[] params, Predicate<Integer> predicate,
+        BiConsumer<String, Object[]> biConsumer) {
+        if (!predicate.test(level)) {
+            return;
         }
+        biConsumer.accept(msg,params);
     }
 }
-interface Logger{
+
+
+class Logger {
 
     /**
      * debug 5
      * info 4
      * warn 3
      * error 2
-     * **/
-    default public void info(String msg,Object[] vars){
-        logIf(4,msg,vars);
+     **/
+    public void info(String msg, Object[] vars) {
+        logIf(4, msg, vars, (level) -> {
+            return level < 4;
+        }, (coarsemsg, params) -> {
+        });
     }
 
-    default public void logIf(int level,String msg,Object[] vars){
-
+    public void logIf(int level, String msg, Object[] vars, Predicate<Integer> predicate,
+        BiConsumer<String, Object[]> biConsumer) {
+        if (!predicate.test(level)) {
+            return;
+        }
+        biConsumer.accept(msg, vars);
     }
+
 }
